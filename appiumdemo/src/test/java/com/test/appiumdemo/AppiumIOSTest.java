@@ -30,7 +30,7 @@ public class AppiumIOSTest {
 		Thread.sleep(2000);
 		wd.findElementByAccessibilityId("Back").click();
 		Thread.sleep(5000);
-		
+		Thread.sleep(1000);
 		wd.quit();
 	}
 
