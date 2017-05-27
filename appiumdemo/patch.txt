@@ -1,0 +1,49 @@
+### Eclipse Workspace Patch 1.0
+#P UAF
+Index: src/test/java/com/shn/test/RunOffice365DashboardTests.java
+===================================================================
+--- src/test/java/com/shn/test/RunOffice365DashboardTests.java	(revision 19068)
++++ src/test/java/com/shn/test/RunOffice365DashboardTests.java	(working copy)
+@@ -284,7 +284,7 @@
+ 		dash.validateLIvelogsUnderThreadsSection(inputParams,dashboardURLFromXML,username_tenantFromXML,password_tenantFromXML,watchTowerIPAddressFromXML,tenantIdFromXML,username_serviceFromXML,cspId,startTime,"");
+ 	}
+ 	
+-	@Test(groups ={"Office365AdminLiveLogAll","Office365AdminLiveLogSanity"})
++	@Test(groups ={"Office365AdminLiveLogAll","Office365AdminLiveLogSanity"}, enabled=false)
+ 	public void testOffice365LiveLogValidateCreateSite(){
+ 
+ 		Calendar startTime = Calendar.getInstance();
+Index: src/test/java/com/shn/services/Office365.java
+===================================================================
+--- src/test/java/com/shn/services/Office365.java	(revision 19068)
++++ src/test/java/com/shn/services/Office365.java	(working copy)
+@@ -3513,16 +3513,24 @@
+ 
+ 		for(int i=0; i<frames.size(); i++){
+ 		driver.switchTo().frame(i);
+-		int objCount = Utility.returnListOfVisibleElements(driver, "//input[@title='Site name' and @type='text']").size();
++		//int objCount = Utility.returnListOfVisibleElements(driver, "//input[@title='Site name' and @type='text']").size();
++		int objCount = Utility.returnListOfVisibleElements(driver, "//*[text()='Team site name']/following-sibling::input").size();
+ 		Logger.info("Frame id : "+i+ " Obj count : "+objCount);
+ 		if(objCount == 1){
+ 		Logger.info("WebElement found under Frame id = "+i);
+-		Utility.waitOnXpath(driver, 120, "//input[@title='Site name' and @type='text']");
+-		WebElement siteNameInput =driver.findElement(By.xpath("//input[@title='Site name' and @type='text']"));
++		//Utility.waitOnXpath(driver, 120, "//input[@title='Site name' and @type='text']");
++		Utility.waitOnXpath(driver, 120, "//*[text()='Team site name']/following-sibling::input");
++		//WebElement siteNameInput =driver.findElement(By.xpath("//input[@title='Site name' and @type='text']"));
++		WebElement siteNameInput =driver.findElement(By.xpath("//*[text()='Team site name']/following-sibling::input"));
+ 		siteNameInput.clear();
+ 		siteNameInput.sendKeys(siteName);
+-
+-		mousehoverByxpathAndclick(driver, "//*[@value='Create']");
++		if(Utility.waitOnXpathAndReturn(driver, 30, "//*[text()='Next']/parent::button")){
++			//mousehoverByxpathAndclick(driver, "//*[@value='Create']");
++			mousehoverByxpathAndclick(driver, "//*[text()='Next']/parent::button");
++			if(Utility.waitOnXpathAndReturn(driver, 30, "//*[text()='Finish']/parent::button")){
++				mousehoverByxpathAndclick(driver, "//*[text()='Finish']/parent::button");
++			}
++		}
+ 		break;
+ 		};
+ 		driver.switchTo().defaultContent();
